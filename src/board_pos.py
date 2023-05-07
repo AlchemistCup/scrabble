@@ -45,6 +45,9 @@ class Pos:
     def __eq__(self, other) -> bool:
         return (self.row == other.row) and (self.col == other.col)
     
+    def __lt__(self, other) -> bool:
+        return (self.row, self.col) < (other.row, other.col)
+    
     def __hash__(self) -> int:
         return hash((self.row, self.col))
 

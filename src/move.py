@@ -6,7 +6,7 @@ from board_pos import Pos
 class Move:
     def __init__(self, tiles: List[Tile], coordinates: List[Pos]):
         assert len(tiles) == len(coordinates)
-        assert len(tiles) > 0
+        assert 0 < len(tiles) <= 7
 
         # Sort tiles by position
         tile_positions = sorted(zip(tiles, coordinates), key=lambda tile_pos: tile_pos[1])
@@ -16,8 +16,8 @@ class Move:
 
     @property
     def is_valid(self):
-        along_row = all(pos[0] == self._coordinates[0][0] for pos in self._coordinates)
-        along_col = all(pos[1] == self._coordinates[0][1] for pos in self._coordinates)
+        along_row = all(pos.row == self._coordinates[0].row for pos in self._coordinates)
+        along_col = all(pos.col == self._coordinates[0].col for pos in self._coordinates)
         return along_row or along_col
     
     @property
