@@ -41,6 +41,12 @@ class Pos:
     
     def __sub__(self, other):
         return Pos(self.row - other.row, self.col - other.col)
+    
+    def __eq__(self, other) -> bool:
+        return (self.row == other.row) and (self.col == other.col)
+    
+    def __hash__(self) -> int:
+        return hash((self.row, self.col))
 
     def __repr__(self) -> str:
         return f"Pos({self._row}, {self._col})"
