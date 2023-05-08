@@ -1,8 +1,17 @@
 from typing import Optional, List, Tuple
 from enum import Enum
+from copy import deepcopy
 
 from tile import Tile
-from move import Pos, Move
+from move import Move, Direction
+from board_pos import Pos
+
+class SquareType(Enum):
+    Plain = 0
+    LetterX2 = 1
+    LetterX3 = 2
+    WordX2 = 3
+    WordX3 = 4
 
 class Board:
     def __init__(self):
@@ -12,19 +21,19 @@ class Board:
     def get_tile(self, pos: Pos) -> Optional[Tile]:
         return self._board[pos.row][pos.col]
 
-    def apply_move(self, move: Move) -> int:
+    def apply_move(self, move: Move) -> bool:
         """
-        Applies the specified move to the board, and returns its score. Throws if move is invalid.
+        Applies the specified move to the board. Returns true if move was applied successfully, false if move was invalid (application did not take place)
         """
-        assert move.is_valid
-        assert self._has_anchor(move)
+        if not move.is_valid or self._has_anchor(move):
+            return False
 
         for (tile, pos) in move:
             self._place_tile(tile, pos)
         
         score = self._get_score(move)
         self._moves.append(move, score)
-        return score
+        return True
     
     def undo_move(self, n: int = -1) -> int:
         """
@@ -58,15 +67,71 @@ class Board:
         return False
 
     def _get_score(self, move: Move):
-        start = move.start
-        end = move.end
+        """
+        Gets the score for the given move. Assumes the board state contains the tiles from the move.
+        """
+        assert all(tile == self.get_tile(pos) for tile, pos in move)
 
+        def get_score_1D(placed_tiles: List[Pos], dir: Direction):
+            score = 0
+            word_multiplier = 1
+            for tile, pos in self._get_tiles_through_pos(placed_tiles[0], dir):
+                letter_multiplier = 1
+                if pos in placed_tiles: # Only count multiplier if included in placed tiles
+                    match self._get_square_type(pos):
+                        case SquareType.LetterX2:
+                            letter_multiplier = 2
+                        case SquareType.LetterX3:
+                            letter_multiplier = 3
+                        case SquareType.WordX2:
+                            word_multiplier *= 2
+                        case SquareType.WordX3:
+                            word_multiplier *= 3
+                
+                score += letter_multiplier * tile.value
+            
+            return score * word_multiplier
+
+        main_score = get_score_1D(move.coordinates, move.direction)
         bingo_bonus = 50 * (len(move) == 7)
+        cross_score = 0
+        for pos in move.coordinates:
+            cross_score += get_score_1D([pos], move.direction.opposite)
 
-        assert False, "Not yet implemented"
+        return main_score + cross_score + bingo_bonus
 
-        # if move.is_horizontal:
-        #     while start.row > 0 and self.get_tile(start) is not None:
-        #         start -= Pos(1, 0)
-        #     while end.row < 14 and self.get_tile(end) is not None:
-        #         end +=
+    def _get_tiles_through_pos(self, anchor: Pos, dir: Direction):
+        """
+        Generates all tiles along the given direction going through the anchor position until an empty square or the board edge is reached
+        """
+        assert self.get_tile(anchor) is not None
+
+        pos = anchor
+        while pos.in_bounds and self.get_tile(pos) is not None:
+            yield self.get_tile(pos), pos
+            pos += dir.epsilon
+
+        pos = anchor - dir.epsilon # Avoid double counting anchor
+        while pos.in_bounds and self.get_tile(pos) is not None:
+            yield self.get_tile(pos), pos
+            pos -= dir.epsilon
+
+    def _get_square_type(pos: Pos):
+        """
+        Returns the SquareType corresponding to a given board position.
+        """
+        # Exploit symmetry of board quadrants
+        regularised_pos = deepcopy(pos).regularise()
+        return Board._SQUARE_TYPES_TOP_LEFT[regularised_pos.row][regularised_pos.col]
+    
+    # Encodes the types of squares in Q4 of the board
+    _SQUARE_TYPES_TOP_LEFT = [
+        [SquareType.WordX3, SquareType.Plain, SquareType.Plain, SquareType.LetterX2, SquareType.Plain, SquareType.Plain, SquareType.Plain, SquareType.WordX3],
+        [SquareType.Plain, SquareType.WordX2, SquareType.Plain, SquareType.Plain, SquareType.Plain, SquareType.LetterX3, SquareType.Plain, SquareType.Plain],
+        [SquareType.Plain, SquareType.Plain, SquareType.WordX2, SquareType.Plain, SquareType.Plain, SquareType.Plain, SquareType.LetterX2, SquareType.Plain],
+        [SquareType.LetterX2, SquareType.Plain, SquareType.Plain, SquareType.WordX2, SquareType.Plain, SquareType.Plain, SquareType.Plain, SquareType.LetterX2],
+        [SquareType.Plain, SquareType.Plain, SquareType.Plain, SquareType.Plain, SquareType.WordX2, SquareType.Plain, SquareType.Plain, SquareType.Plain],
+        [SquareType.Plain, SquareType.LetterX3, SquareType.Plain, SquareType.Plain, SquareType.Plain, SquareType.LetterX3, SquareType.Plain, SquareType.Plain],
+        [SquareType.Plain, SquareType.Plain, SquareType.LetterX2, SquareType.Plain, SquareType.Plain, SquareType.Plain, SquareType.LetterX2, SquareType.Plain],
+        [SquareType.WordX3, SquareType.Plain, SquareType.Plain, SquareType.LetterX2, SquareType.Plain, SquareType.Plain, SquareType.Plain, SquareType.WordX2]
+    ]

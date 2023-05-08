@@ -1,7 +1,31 @@
 from typing import List
+from enum import Enum
 
 from tile import Tile
 from board_pos import Pos
+
+class Direction(Enum):
+    Horizontal = 0
+    Vertical = 1
+
+    @property
+    def opposite(self):
+        match self:
+            case Direction.Horizontal:
+                return Direction.Vertical
+            case Direction.Vertical:
+                return Direction.Horizontal
+            
+    @property
+    def epsilon(self):
+        """
+        Returns minimum displacement along the direction
+        """
+        match self:
+            case Direction.Horizontal:
+                return Pos(0, 1)
+            case Direction.Vertical:
+                return Pos(1, 0)
 
 class Move:
     def __init__(self, tiles: List[Tile], coordinates: List[Pos]):
@@ -29,8 +53,18 @@ class Move:
         return self._coordinates[-1]
     
     @property
-    def is_horizontal(self):
-        return all(pos[0] == self._coordinates[0][0] for pos in self._coordinates)
+    def coordinates(self):
+        return self._coordinates
+    
+    @property
+    def direction(self):
+        assert self.is_valid, "Should not call .direction on invalid move"
 
+        diff = self._coordinates[-1] - self._coordinates[0]
+        if diff.row == 0:
+            return Direction.Horizontal
+        elif diff.col == 0:
+            return Direction.Vertical
+        
     def __iter__(self):
         return iter(zip(self._tiles, self._coordinates))

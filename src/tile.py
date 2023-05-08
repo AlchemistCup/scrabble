@@ -37,3 +37,6 @@ class Tile:
             return f"Tile('{self._letter} = {self._custom_letter}')"
         else:
             return f"Tile('{self._letter}')"
+
+    def __eq__(self, other) -> bool:
+        return self._letter == other._letter
