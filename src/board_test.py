@@ -65,5 +65,30 @@ class TestApplyMove(unittest.TestCase):
         self.assertEqual([board.get_tile(pos) for pos in move2.coordinates], [None] * len(move2._tiles))
         self.assertEqual(board._moves, [move1])
 
+    def test_discontinuous_move_with_all_tiles_adjacent(self):
+        board = Board()
+        move1 = Move([Tile('A'), Tile('B'), Tile('A'), Tile('N'), Tile('D'), Tile('O'), Tile('N')], [Pos(7, 7), Pos(7, 8), Pos(7, 9), Pos(7, 10), Pos(7, 11), Pos(7, 12), Pos(7, 13)])
+        self.assert_(move1.is_valid)
+        self.assert_(board.apply_move(move1))
+
+        move2 = Move([Tile('T'), Tile('E')], [Pos(8, 7), Pos(9, 7)])
+        self.assert_(move2.is_valid)
+        self.assert_(board.apply_move(move2))
+
+        move3 = Move([Tile('O'), Tile('O'), Tile('R')], [Pos(8, 11), Pos(9, 11), Pos(10, 11)])
+        self.assert_(move3.is_valid)
+        self.assert_(board.apply_move(move3))
+
+        # Edge case: All tiles in move are touching another tile on the board (or in the move), but the move is invalid as it forms 2 separate words in the same direction of play
+        move4 = Move([Tile('F'), Tile('D'), Tile('T')], [Pos(9, 6), Pos(9, 8), Pos(9, 10)])
+        self.assert_(move4.is_valid)
+        self.assertFalse(board.apply_move(move4))
+
+        for move in [move1, move2, move3]:
+            self.assertEqual([board.get_tile(pos) for pos in move.coordinates], move._tiles)
+        
+        self.assertEqual([board.get_tile(pos) for pos in move4.coordinates], [None] * len(move4._tiles))
+        self.assertEqual(board._moves, [move1, move2, move3])
+
 if __name__ == '__main__':
     unittest.main()
