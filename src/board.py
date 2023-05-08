@@ -78,12 +78,18 @@ class Board:
     
     def _is_continuous(self, move: Move):
         """
-        Checks that all tiles in a move are touching another tile, either already placed on the board or part of the move.
+        Checks that all tiles in a move form a continuous word
         """
-        # O(n^2) but the length of a move is at most 7 so should be fine
-        for _, pos in move:
-            if all(self.get_tile(adj) is None and adj not in move.coordinates for adj in pos.get_adjacent()):
+        curr = move.start
+        while curr != move.end:
+            if not curr.in_bounds:
                 return False
+
+            if curr not in move.coordinates and self.get_tile(curr) is None:
+                return False
+            
+            curr += move.direction.epsilon
+
         return True
 
     def _get_score(self, move: Move):
