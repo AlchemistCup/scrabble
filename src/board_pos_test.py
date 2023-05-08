@@ -13,5 +13,34 @@ class TestGetAdjacent(unittest.TestCase):
         adjacent_moves = list(pos.get_adjacent())
         self.assertCountEqual(adjacent_moves, [Pos(1, 0), Pos(0, 1)])
 
+class TestRegularise(unittest.TestCase):
+    def test_Q1(self):
+        pos = Pos(6, 12)
+        self.assertEqual(pos.regularise(), Pos(6, 2))
+
+    def test_Q2(self):
+        pos = Pos(10, 9)
+        self.assertEqual(pos.regularise(), Pos(4, 5))
+
+        pos = Pos(13, 13)
+        self.assertEqual(pos.regularise(), Pos(1, 1))
+
+    def test_Q3(self):
+        pos = Pos(14, 7)
+        self.assertEqual(pos.regularise(), Pos(0, 7))
+
+    def test_Q4(self):
+        pos = Pos(1, 3)
+        self.assertEqual(pos.regularise(), Pos(1, 3))
+
+        pos = Pos(6, 6)
+        self.assertEqual(pos.regularise(), Pos(6, 6))
+
+    def test_invalid(self):
+        pos = Pos(15, 0)
+        self.assertFalse(pos.in_bounds)
+        with self.assertRaises(AssertionError):
+            pos.regularise()
+
 if __name__ == '__main__':
     unittest.main()

@@ -16,7 +16,8 @@ class SquareType(Enum):
 class Board:
     def __init__(self):
         self._board: List[List[Optional[Tile]]] = [[None] * 15 for _ in range(15)]
-        self._moves: List[Tuple[Move, int]] = []
+        self._moves: List[Move] = []
+        self._move_scores: List[int] = []
 
     def get_tile(self, pos: Pos) -> Optional[Tile]:
         return self._board[pos.row][pos.col]
@@ -25,15 +26,21 @@ class Board:
         """
         Applies the specified move to the board. Returns true if move was applied successfully, false if move was invalid (application did not take place)
         """
-        if not move.is_valid or self._has_anchor(move):
+        if not (move.is_valid and self._has_anchor(move) and self._is_continuous(move)):
             return False
 
         for (tile, pos) in move:
             self._place_tile(tile, pos)
         
-        score = self._get_score(move)
-        self._moves.append(move, score)
+        self._move_scores.append(self._get_score(move))
+        self._moves.append(move)
         return True
+    
+    def get_score(self, n: int = -1):
+        """
+        Returns the score of the n-th move (latest by default)
+        """
+        return self._move_scores[n]
     
     def undo_move(self, n: int = -1) -> int:
         """
@@ -42,6 +49,9 @@ class Board:
         score = self._moves[n][1]
         del self._moves[n]
         return score
+    
+    def __iter__(self):
+        return iter(self._board)
 
     def _place_tile(self, tile: Tile, pos: Pos):
         if self.get_tile(pos) is not None:
@@ -55,7 +65,7 @@ class Board:
 
     def _has_anchor(self, move: Move):
         """
-        Checks that a move is touching an existing letter (or is going through the center square)
+        Checks that a move is touching an existing letter (or is going through the center square), and that all tiles are adjacent to another tile
         """
         for _, pos in move:
             if pos == Pos(7, 7): # Center tile
@@ -65,6 +75,16 @@ class Board:
                 return True
             
         return False
+    
+    def _is_continuous(self, move: Move):
+        """
+        Checks that all tiles in a move are touching another tile, either already placed on the board or part of the move.
+        """
+        # O(n^2) but the length of a move is at most 7 so should be fine
+        for _, pos in move:
+            if all(self.get_tile(adj) is None and adj not in move.coordinates for adj in pos.get_adjacent()):
+                return False
+        return True
 
     def _get_score(self, move: Move):
         """
@@ -78,7 +98,7 @@ class Board:
             for tile, pos in self._get_tiles_through_pos(placed_tiles[0], dir):
                 letter_multiplier = 1
                 if pos in placed_tiles: # Only count multiplier if included in placed tiles
-                    match self._get_square_type(pos):
+                    match Board._get_square_type(pos):
                         case SquareType.LetterX2:
                             letter_multiplier = 2
                         case SquareType.LetterX3:
@@ -93,7 +113,7 @@ class Board:
             return score * word_multiplier
 
         main_score = get_score_1D(move.coordinates, move.direction)
-        bingo_bonus = 50 * (len(move) == 7)
+        bingo_bonus = 50 * (len(move.coordinates) == 7)
         cross_score = 0
         for pos in move.coordinates:
             cross_score += get_score_1D([pos], move.direction.opposite)
@@ -116,6 +136,7 @@ class Board:
             yield self.get_tile(pos), pos
             pos -= dir.epsilon
 
+    @staticmethod
     def _get_square_type(pos: Pos):
         """
         Returns the SquareType corresponding to a given board position.

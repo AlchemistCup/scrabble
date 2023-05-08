@@ -42,7 +42,8 @@ class Move:
     def is_valid(self):
         along_row = all(pos.row == self._coordinates[0].row for pos in self._coordinates)
         along_col = all(pos.col == self._coordinates[0].col for pos in self._coordinates)
-        return along_row or along_col
+        unique_positions = len(set(self.coordinates)) == len(self.coordinates)
+        return (along_row or along_col) and unique_positions
     
     @property
     def start(self) -> Pos:
@@ -65,6 +66,9 @@ class Move:
             return Direction.Horizontal
         elif diff.col == 0:
             return Direction.Vertical
-        
+    
+    def __eq__(self, other) -> bool:
+        return self._tiles == other._tiles and self.coordinates == other.coordinates 
+
     def __iter__(self):
         return iter(zip(self._tiles, self._coordinates))

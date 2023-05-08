@@ -7,9 +7,9 @@ class Tile:
                      'Y': 4, 'Z': 10, '?': 0}
 
     def __init__(self, letter: str):
-        if letter not in self.LETTER_VALUES:
-            raise ValueError(f"Invalid letter {letter}")
         self._letter = letter.upper()
+        if self._letter not in self.LETTER_VALUES:
+            raise ValueError(f"Invalid letter {self._letter}")
         self._custom_letter = None
 
     @property
@@ -32,6 +32,8 @@ class Tile:
         # Store in lowercase to match Woogles omgwords format
         self._custom_letter = custom_letter.lower()
 
+        return self
+
     def __repr__(self):
         if self.is_blank and self._custom_letter is not None:
             return f"Tile('{self._letter} = {self._custom_letter}')"
@@ -39,4 +41,4 @@ class Tile:
             return f"Tile('{self._letter}')"
 
     def __eq__(self, other) -> bool:
-        return self._letter == other._letter
+        return isinstance(other, Tile) and self._letter == other._letter
