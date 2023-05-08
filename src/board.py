@@ -122,7 +122,9 @@ class Board:
         bingo_bonus = 50 * (len(move.coordinates) == 7)
         cross_score = 0
         for pos in move.coordinates:
-            cross_score += get_score_1D([pos], move.direction.opposite)
+            # Check if new word is formed
+            if any(self.get_tile(adj) is not None for adj in pos.get_adjacent(move.direction.opposite)):
+                cross_score += get_score_1D([pos], move.direction.opposite)
 
         return main_score + cross_score + bingo_bonus
 

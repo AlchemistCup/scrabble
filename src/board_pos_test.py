@@ -1,17 +1,35 @@
 import unittest
 
-from board_pos import Pos
+from board_pos import Pos, Direction
  
 class TestGetAdjacent(unittest.TestCase):
-    def test_center_pos(self):
+    def test_center(self):
         pos = Pos(2, 3)
         adjacent_moves = list(pos.get_adjacent())
         self.assertCountEqual(adjacent_moves, [Pos(1, 3), Pos(3, 3), Pos(2, 2), Pos(2, 4)])
 
-    def test_edge_pos(self):
+    def test_corner(self):
         pos = Pos(0, 0)
         adjacent_moves = list(pos.get_adjacent())
         self.assertCountEqual(adjacent_moves, [Pos(1, 0), Pos(0, 1)])
+
+    def test_horizontal(self):
+        pos = Pos(8, 9)
+        adjacent_moves = list(pos.get_adjacent(Direction.Horizontal))
+        self.assertCountEqual(adjacent_moves, [Pos(8, 8), Pos(8, 10)])
+
+        pos = Pos(6, 14)
+        adjacent_moves = list(pos.get_adjacent(Direction.Horizontal))
+        self.assertCountEqual(adjacent_moves, [Pos(6, 13)])
+
+    def test_vertical(self):
+        pos = Pos(12, 5)
+        adjacent_moves = list(pos.get_adjacent(Direction.Vertical))
+        self.assertCountEqual(adjacent_moves, [Pos(11, 5), Pos(13, 5)])
+
+        pos = Pos(14, 2)
+        adjacent_moves = list(pos.get_adjacent(Direction.Vertical))
+        self.assertCountEqual(adjacent_moves, [Pos(13, 2)])
 
 class TestRegularise(unittest.TestCase):
     def test_Q1(self):

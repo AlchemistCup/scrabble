@@ -90,5 +90,34 @@ class TestApplyMove(unittest.TestCase):
         self.assertEqual([board.get_tile(pos) for pos in move4.coordinates], [None] * len(move4._tiles))
         self.assertEqual(board._moves, [move1, move2, move3])
 
+class TestGetScore(unittest.TestCase):
+    def test_bingo(self):
+        board = Board()
+        move1 = Move([Tile('A'), Tile('B'), Tile('A'), Tile('N'), Tile('D'), Tile('O'), Tile('N')], [Pos(7, 7), Pos(7, 8), Pos(7, 9), Pos(7, 10), Pos(7, 11), Pos(7, 12), Pos(7, 13)])
+        self.assert_(board.apply_move(move1))
+        self.assertEqual(board.get_score(), 74)
+
+    def test_qi(self):
+        board = Board()
+        move1 = Move([Tile('t'), Tile('o')], [Pos(7, 6), Pos(7, 7)])
+        self.assert_(board.apply_move(move1))
+        self.assertEqual(board.get_score(), 4)
+
+        move2 = Move([Tile('T'), Tile('i'), Tile('l')], [Pos(4, 6), Pos(5, 6), Pos(6, 6)])
+        self.assert_(board.apply_move(move2))
+        self.assertEqual(board.get_score(), 5)
+
+        move3 = Move([Tile('i'), Tile('l')], [Pos(6, 5), Pos(6, 7)])
+        self.assert_(board.apply_move(move3))
+        self.assertEqual(board.get_score(), 5)
+
+        # Triple letter bonus used twice
+        move4 = Move([Tile('Q')], [Pos(5, 5)])
+        self.assert_(board.apply_move(move4))
+        self.assertEqual(board.get_score(), 62)
+
+
+
+
 if __name__ == '__main__':
     unittest.main()

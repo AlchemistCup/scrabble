@@ -1,3 +1,29 @@
+from enum import Enum
+from typing import Optional
+
+class Direction(Enum):
+    Horizontal = 0
+    Vertical = 1
+
+    @property
+    def opposite(self):
+        match self:
+            case Direction.Horizontal:
+                return Direction.Vertical
+            case Direction.Vertical:
+                return Direction.Horizontal
+            
+    @property
+    def epsilon(self):
+        """
+        Returns minimum displacement along the direction
+        """
+        match self:
+            case Direction.Horizontal:
+                return Pos(0, 1)
+            case Direction.Vertical:
+                return Pos(1, 0)
+
 class Pos:
     MAX_SIZE = 15
 
@@ -17,23 +43,25 @@ class Pos:
     def in_bounds(self):
         return Pos._in_bounds(self.row) and Pos._in_bounds(self.col)
     
-    def get_adjacent(self):
+    def get_adjacent(self, dir: Optional[Direction] = None):
         """
-        Generates all valid positions adjacent to itself
+        Generates all valid positions adjacent to itself. If dir is specified, only generates positions in the appropriate direction.
         """
         assert self.in_bounds
-        
+
         def adjacent_1D(x_or_y):
             for displacement in [-1, 1]:
                 new_pos = x_or_y(self) + displacement
                 if Pos._in_bounds(new_pos):
                     yield new_pos
 
-        for new_row in adjacent_1D(lambda pos: pos.row):
-            yield Pos(new_row, self.col)
+        if dir is None or dir is Direction.Vertical:
+            for new_row in adjacent_1D(lambda pos: pos.row):
+                yield Pos(new_row, self.col)
         
-        for new_col in adjacent_1D(lambda pos: pos.col):
-            yield Pos(self.row, new_col)
+        if dir is None or dir is Direction.Horizontal:
+            for new_col in adjacent_1D(lambda pos: pos.col):
+                yield Pos(self.row, new_col)
 
     def regularise(self):
         """
