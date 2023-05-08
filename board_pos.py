@@ -101,6 +101,6 @@ class Pos:
         return f"Pos({self._row}, {self._col})"
     
     # Convert to match Woggles omgwords position format
+    # TODO: we need to swap the order of row/col depending on the orientation of the play
     def __str__(self) -> str:
-        assert False, "Currently unimplemented"
-        return f""
+        return f"{chr(ord('A') + self.col)}{self.row}"
