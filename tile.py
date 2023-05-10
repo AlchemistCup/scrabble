@@ -12,6 +12,21 @@ class Tile:
             raise ValueError(f"Invalid letter {self._letter}")
         self._custom_letter = None
 
+    @classmethod
+    def fromstr(cls, tile_str):
+        """
+        Constructs a Tile based on a string in the Woogles format.
+        """
+        if len(tile_str) != 1:
+            raise ValueError(f"Cannot construct tile from {tile_str}, Tiles can only be constructed from single characters")
+        
+        if tile_str.isupper():
+            return cls(tile_str)
+        elif tile_str.islower():
+            return cls('?').set_letter(tile_str)
+        else:
+            raise ValueError(f"Cannot construct tile from invalid letter {tile_str}")
+
     @property
     def value(self) -> int:
         return self.LETTER_VALUES[self._letter]
@@ -26,13 +41,22 @@ class Tile:
         elif self._custom_letter is not None:
             raise ValueError(f"Letter for blank tile already set to {self._custom_letter}")
         
-        if not custom_letter.isalpha():
+        if not custom_letter.isalpha() or len(custom_letter) != 1:
             raise ValueError(f"Invalid blank tile letter {custom_letter}")
         
         # Store in lowercase to match Woogles omgwords format
         self._custom_letter = custom_letter.lower()
 
         return self
+
+    def format(self):
+        """
+        Converts a tile to Woogles string format: "<letter>" (uppercase). If a tile is blank, "<custom_letter>" is displayed instead (lowercase).
+        """
+        if self.is_blank:
+            assert self._custom_letter is not None
+            return self._custom_letter
+        return self._letter
 
     def __repr__(self):
         if self.is_blank and self._custom_letter is not None:
@@ -41,4 +65,9 @@ class Tile:
             return f"Tile('{self._letter}')"
 
     def __eq__(self, other) -> bool:
-        return isinstance(other, Tile) and self._letter == other._letter
+        if not isinstance(other, Tile):
+            return False
+
+        if self.is_blank:
+            return self._custom_letter == other._custom_letter
+        return self._letter == other._letter

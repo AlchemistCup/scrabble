@@ -1,7 +1,36 @@
 import unittest
 
 from board_pos import Pos, Direction
- 
+
+class TestFromString(unittest.TestCase):
+    def test_valid(self):
+        pos_str = '6G'
+        pos, dir = Pos.fromstr(pos_str)
+        self.assertEqual(pos, Pos(5, 6))
+        self.assertEqual(pos_str, pos.format(dir))
+        self.assertEqual(dir, Direction.Horizontal)
+
+        pos_str = 'G6'
+        pos, dir = Pos.fromstr(pos_str)
+        self.assertEqual(pos, Pos(5, 6))
+        self.assertEqual(pos_str, pos.format(dir))
+        self.assertEqual(dir, Direction.Vertical)
+
+
+    def test_invalid_format(self):
+        pos_str = '7_G'
+        with self.assertRaises(ValueError):
+            Pos.fromstr(pos_str)
+
+    def test_out_of_bounds(self):
+        row_oob = '16B'
+        with self.assertRaises(ValueError):
+            Pos.fromstr(row_oob)
+
+        col_oob = '12P'
+        with self.assertRaises(ValueError):
+            Pos.fromstr(col_oob)
+
 class TestGetAdjacent(unittest.TestCase):
     def test_center(self):
         pos = Pos(2, 3)

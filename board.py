@@ -13,6 +13,24 @@ class SquareType(Enum):
     WordX2 = 3
     WordX3 = 4
 
+class MoveInfo:
+    def __init__(self, move: Move, score: int, words: List[str]):
+        self._move = move
+        self._score = score
+        self._words = words
+
+    @property
+    def move(self):
+        return self._move
+    
+    @property
+    def score(self):
+        return self._score
+    
+    @property
+    def words(self):
+        return self._words
+
 class Board:
     def __init__(self):
         self._board: List[List[Optional[Tile]]] = [[None] * 15 for _ in range(15)]
@@ -150,7 +168,7 @@ class Board:
         Returns the SquareType corresponding to a given board position.
         """
         # Exploit symmetry of board quadrants
-        regularised_pos = deepcopy(pos).regularise()
+        regularised_pos = pos.regularise()
         return Board._SQUARE_TYPES_TOP_LEFT[regularised_pos.row][regularised_pos.col]
     
     # Encodes the types of squares in Q4 of the board

@@ -14,6 +14,29 @@ class Move:
         self._tiles: List[Tile] = [tile_pos[0] for tile_pos in tile_positions]
         self._coordinates: List[Pos] = [tile_pos[1] for tile_pos in tile_positions]
 
+    @classmethod
+    def fromstr(cls, move_str: str):
+        """
+        Constructs a Move based on a string in the Woogles format.
+        """
+        if len(move_str.split()) != 2:
+            raise ValueError(f"Cannot construct move from invalid format {move_str}")
+        
+        start_pos_str, tiles_str = move_str.split()
+        curr_pos, dir = Pos.fromstr(start_pos_str)
+
+        tiles: List[Tile] = []
+        coords: List[Pos] = []
+        for letter in tiles_str:
+            if letter != '.':
+                tiles.append(Tile.fromstr(letter))
+                coords.append(curr_pos)
+            curr_pos += dir.epsilon
+        
+        move = cls(tiles, coords)
+        assert move.is_valid
+        return move
+
     @property
     def is_valid(self):
         along_row = all(pos.row == self._coordinates[0].row for pos in self._coordinates)
@@ -42,9 +65,26 @@ class Move:
             return Direction.Horizontal
         elif diff.col == 0:
             return Direction.Vertical
+        
+    def format(self):
+        """
+        Converts a move to Woogles string format: "<start_pos> <tiles>", where '.' is used to represent playing through an existing tile.
+        """
+        assert self.is_valid, "Cannot display invalid move"
+        move = f"{self._tiles[0].format()}"
+        for i, (tile, pos) in enumerate(self)[1:]:
+            distance_from_previous = (pos - self.coordinates[i - 1]).L1_norm() # Displacement should be 0 in one direction
+            move += '.' * (distance_from_previous - 1) # Represents tiles being played through
+            move += tile.format()
+
+        return f"{self.start.format(self.direction)} {move}"
     
     def __eq__(self, other) -> bool:
         return self._tiles == other._tiles and self.coordinates == other.coordinates 
 
     def __iter__(self):
         return iter(zip(self._tiles, self._coordinates))
+    
+    # Matches Woogles format
+    def __repr__(self):
+        return self.format()

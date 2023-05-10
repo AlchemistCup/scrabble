@@ -17,7 +17,7 @@ class TestApplyMove(unittest.TestCase):
 
     def test_move_no_anchor(self):
         board = Board()
-        move = Move([Tile('E'), Tile('G'), Tile('G')], [Pos(7, 8), Pos(8, 8), Pos(9, 8)])
+        move = Move.fromstr('I8 EGG')
         self.assert_(move.is_valid)
 
         self.assertFalse(board.apply_move(move))
@@ -26,7 +26,7 @@ class TestApplyMove(unittest.TestCase):
 
     def test_first_move(self):
         board = Board()
-        move = Move([Tile('E'), Tile('G'), Tile('G')], [Pos(7, 7), Pos(8, 7), Pos(9, 7)])
+        move = Move.fromstr('H8 EGG')
         self.assert_(move.is_valid)
 
         self.assert_(board.apply_move(move))
@@ -39,11 +39,11 @@ class TestApplyMove(unittest.TestCase):
 
     def test_move_with_anchor(self):
         board = Board()
-        move1 = Move([Tile('E'), Tile('G'), Tile('G')], [Pos(7, 7), Pos(8, 7), Pos(9, 7)])
+        move1 = Move.fromstr('H8 EGG')
         self.assert_(move1.is_valid)
         self.assert_(board.apply_move(move1))
 
-        move2 = Move([Tile('A'), Tile('F'), Tile('F'), Tile('E')], [Pos(9, 8), Pos(9, 9), Pos(9, 10), Pos(9, 11)])
+        move2 = Move.fromstr('10I AFFE')
         self.assert_(move1.is_valid)
         
         self.assert_(board.apply_move(move2))
@@ -53,11 +53,11 @@ class TestApplyMove(unittest.TestCase):
 
     def test_discontinuous_move_with_anchor(self):
         board = Board()
-        move1 = Move([Tile('E'), Tile('G'), Tile('G')], [Pos(7, 7), Pos(8, 7), Pos(9, 7)])
+        move1 = Move.fromstr('H8 EGG')
         self.assert_(move1.is_valid)
         self.assert_(board.apply_move(move1))
 
-        move2 = Move([Tile('A'), Tile('F'), Tile('F'), Tile('E')], [Pos(9, 8), Pos(9, 9), Pos(9, 10), Pos(9, 12)])
+        move2 = Move.fromstr('10I AFF.E')
         self.assert_(move1.is_valid)
         
         self.assertFalse(board.apply_move(move2))
@@ -67,20 +67,20 @@ class TestApplyMove(unittest.TestCase):
 
     def test_discontinuous_move_with_all_tiles_adjacent(self):
         board = Board()
-        move1 = Move([Tile('A'), Tile('B'), Tile('A'), Tile('N'), Tile('D'), Tile('O'), Tile('N')], [Pos(7, 7), Pos(7, 8), Pos(7, 9), Pos(7, 10), Pos(7, 11), Pos(7, 12), Pos(7, 13)])
+        move1 = Move.fromstr('8H ABANDON')
         self.assert_(move1.is_valid)
         self.assert_(board.apply_move(move1))
 
-        move2 = Move([Tile('T'), Tile('E')], [Pos(8, 7), Pos(9, 7)])
+        move2 = Move.fromstr('H9 TE')
         self.assert_(move2.is_valid)
         self.assert_(board.apply_move(move2))
 
-        move3 = Move([Tile('O'), Tile('O'), Tile('R')], [Pos(8, 11), Pos(9, 11), Pos(10, 11)])
+        move3 = Move.fromstr('L9 OOR')
         self.assert_(move3.is_valid)
         self.assert_(board.apply_move(move3))
 
         # Edge case: All tiles in move are touching another tile on the board (or in the move), but the move is invalid as it forms 2 separate words in the same direction of play
-        move4 = Move([Tile('F'), Tile('D'), Tile('T')], [Pos(9, 6), Pos(9, 8), Pos(9, 10)])
+        move4 = Move.fromstr('10G F.D.T')
         self.assert_(move4.is_valid)
         self.assertFalse(board.apply_move(move4))
 
@@ -93,28 +93,35 @@ class TestApplyMove(unittest.TestCase):
 class TestGetScore(unittest.TestCase):
     def test_bingo(self):
         board = Board()
-        move1 = Move([Tile('A'), Tile('B'), Tile('A'), Tile('N'), Tile('D'), Tile('O'), Tile('N')], [Pos(7, 7), Pos(7, 8), Pos(7, 9), Pos(7, 10), Pos(7, 11), Pos(7, 12), Pos(7, 13)])
+        # Also tests stacking multipliers (2xWord with 2xLetter)
+        move1 = Move.fromstr('8H ABANDON')
         self.assert_(board.apply_move(move1))
         self.assertEqual(board.get_score(), 74)
 
     def test_qi(self):
         board = Board()
-        move1 = Move([Tile('t'), Tile('o')], [Pos(7, 6), Pos(7, 7)])
+        move1 = Move.fromstr('8G TO')
         self.assert_(board.apply_move(move1))
         self.assertEqual(board.get_score(), 4)
 
-        move2 = Move([Tile('T'), Tile('i'), Tile('l')], [Pos(4, 6), Pos(5, 6), Pos(6, 6)])
+        move2 = Move.fromstr('G5 TIL.')
         self.assert_(board.apply_move(move2))
         self.assertEqual(board.get_score(), 5)
 
-        move3 = Move([Tile('i'), Tile('l')], [Pos(6, 5), Pos(6, 7)])
+        move3 = Move.fromstr('7F I.L')
         self.assert_(board.apply_move(move3))
         self.assertEqual(board.get_score(), 5)
 
         # Triple letter bonus used twice
-        move4 = Move([Tile('Q')], [Pos(5, 5)])
+        move4 = Move.fromstr('6F Q')
         self.assert_(board.apply_move(move4))
         self.assertEqual(board.get_score(), 62)
+
+    def test_blank(self):
+        board = Board()
+        move1 = Move.fromstr('8D QiNDARS')
+        self.assert_(board.apply_move(move1))
+        self.assertEqual(board.get_score(), 102)
 
 
 

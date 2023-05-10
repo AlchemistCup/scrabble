@@ -1,5 +1,6 @@
 from enum import Enum
 from typing import Optional
+import re
 
 class Direction(Enum):
     Horizontal = 0
@@ -30,6 +31,28 @@ class Pos:
     def __init__(self, row: int, col: int):
         self._row = row
         self._col = col
+
+    @classmethod
+    def fromstr(cls, pos_str: str):
+        """
+        Constructs a Pos based on a string in the Woogles format, also returning the direction indicated.
+        """
+        if match := re.match(r"([0-9]+)([A-Z])", pos_str):
+            row, col = match.groups()
+            dir = Direction.Horizontal
+        elif match := re.match(r"([A-Z])([0-9]+)", pos_str):
+            col, row = match.groups()
+            dir = Direction.Vertical
+        else:
+            raise ValueError(f"String {pos_str} doesn't match Woogles format")
+        
+        row = int(row) - 1
+        col = ord(col) - ord('A')
+
+        pos = cls(row, col)
+        if not pos.in_bounds:
+            raise ValueError(f"Position ({row}, {col}) is out of bounds")
+        return pos, dir
 
     @property
     def row(self):
@@ -69,13 +92,28 @@ class Pos:
         """
         assert self.in_bounds
 
+        row, col = self.row, self.col
         if self._row > 7:
-            self._row = Pos.MAX_SIZE - (self._row + 1)
+            row = Pos.MAX_SIZE - (self._row + 1)
         if self._col > 7:
-            self._col = Pos.MAX_SIZE - (self._col + 1)
+            col = Pos.MAX_SIZE - (self._col + 1)
         
-        return self
+        return Pos(row, col)
 
+    def format(self, dir: Direction):
+        """
+        Converts position to Woogles string format: <row><col> or <col><row>, depending on a given direction. The row is expressed as an integer [1,15], and column is expressed as an uppercase letter [A,O]. Row first indicates horizontal direction, and column first indicates vertical direction. 
+        """
+        col = chr(ord('A') + self.col)
+        row = self.row + 1
+        match dir:
+            case Direction.Vertical:
+                return f"{col}{row}"
+            case Direction.Horizontal:
+                return f"{row}{col}"
+            
+    def L1_norm(self):
+        return self.row + self.col
 
     @staticmethod
     def _in_bounds(x: int):
@@ -100,7 +138,6 @@ class Pos:
     def __repr__(self) -> str:
         return f"Pos({self._row}, {self._col})"
     
-    # Convert to match Woggles omgwords position format
-    # TODO: we need to swap the order of row/col depending on the orientation of the play
-    def __str__(self) -> str:
-        return f"{chr(ord('A') + self.col)}{self.row}"
+    # For debugging
+    def __repr__(self) -> str:
+        return self.format(Direction.Horizontal)
