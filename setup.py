@@ -12,6 +12,7 @@ setup(
     classifiers=['Programming Language :: Python :: 3'],
     author='Simon Staal',
     author_email='simonstaal10@gmail.com',
-    packages=['scrabble'],
+    packages=['scrabble/src'],
     zip_safe=True,
+    test_suite='tests',
 )

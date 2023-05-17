@@ -1,6 +1,6 @@
 import unittest
 
-from tile import Tile
+from src.tile import Tile
  
 class TestInvalidTiles(unittest.TestCase):
     def test_lowercase_letter(self):

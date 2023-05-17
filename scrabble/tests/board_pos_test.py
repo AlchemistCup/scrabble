@@ -1,6 +1,6 @@
 import unittest
 
-from board_pos import Pos, Direction
+from src.board_pos import Pos, Direction
 
 class TestFromString(unittest.TestCase):
     def test_valid(self):

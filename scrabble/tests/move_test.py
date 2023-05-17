@@ -1,8 +1,8 @@
 import unittest
 
-from tile import Tile
-from board_pos import Pos
-from move import Move, Direction
+from src.tile import Tile
+from src.board_pos import Pos
+from src.move import Move, Direction
 
 class TestIsValid(unittest.TestCase):
     def test_valid_horizontal(self):

@@ -1,9 +1,9 @@
 import unittest
 
-from board import Board
-from move import Move
-from tile import Tile
-from board_pos import Pos
+from src.board import Board
+from src.move import Move
+from src.tile import Tile
+from src.board_pos import Pos
  
 class TestApplyMove(unittest.TestCase):
     def test_invalid_move(self):
