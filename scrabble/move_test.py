@@ -7,17 +7,17 @@ from move import Move, Direction
 class TestIsValid(unittest.TestCase):
     def test_valid_horizontal(self):
         move = Move([Tile('A'), Tile('B'), Tile('C')], [Pos(7, 7), Pos(7, 8), Pos(7, 9)])
-        self.assert_(move.is_valid)
+        self.assertTrue(move.is_valid)
         self.assertEqual(move.direction, Direction.Horizontal)
 
     def test_valid_vertical(self):
         move = Move([Tile('E'), Tile('G'), Tile('G')], [Pos(7, 7), Pos(8, 7), Pos(9, 7)])
-        self.assert_(move.is_valid)
+        self.assertTrue(move.is_valid)
         self.assertEqual(move.direction, Direction.Vertical)
 
     def test_valid_discontinuous(self):
         move = Move([Tile('E'), Tile('G'), Tile('G')], [Pos(4, 7), Pos(6, 7), Pos(9, 7)])
-        self.assert_(move.is_valid)
+        self.assertTrue(move.is_valid)
 
     def test_invalid_alignment(self):
         move = Move([Tile('P'), Tile('U'), Tile('T')], [Pos(7, 7), Pos(8, 8), Pos(7, 9)])

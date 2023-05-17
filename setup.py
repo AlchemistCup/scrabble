@@ -6,6 +6,7 @@ with open('VERSION') as f:
 setup(
     name='scrabble',
     version=version,
+    python_requires='>=3.10',
     description='Scrabble game logic library',
     url='',
     classifiers=['Programming Language :: Python :: 3'],

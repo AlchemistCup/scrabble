@@ -18,7 +18,7 @@ class TestApplyMove(unittest.TestCase):
     def test_move_no_anchor(self):
         board = Board()
         move = Move.fromstr('I8 EGG')
-        self.assert_(move.is_valid)
+        self.assertTrue(move.is_valid)
 
         self.assertFalse(board.apply_move(move))
         self.assertEqual(board._board, Board()._board)
@@ -27,9 +27,9 @@ class TestApplyMove(unittest.TestCase):
     def test_first_move(self):
         board = Board()
         move = Move.fromstr('H8 EGG')
-        self.assert_(move.is_valid)
+        self.assertTrue(move.is_valid)
 
-        self.assert_(board.apply_move(move))
+        self.assertTrue(board.apply_move(move))
         self.assertEqual([board._get_tile(pos) for pos in move.coordinates], move._tiles)
         for i, row in enumerate(board):
             for j, tile in enumerate(row):
@@ -43,8 +43,8 @@ class TestApplyMove(unittest.TestCase):
         move2 = Move.fromstr('10H .AFFE')
 
         for move in [move1, move2]:
-            self.assert_(move.is_valid)
-            self.assert_(board.apply_move(move))
+            self.assertTrue(move.is_valid)
+            self.assertTrue(board.apply_move(move))
         
         for move in [move1, move2]:
             self.assertEqual([board._get_tile(pos) for pos in move.coordinates], move._tiles)
@@ -53,11 +53,11 @@ class TestApplyMove(unittest.TestCase):
     def test_discontinuous_move_with_anchor(self):
         board = Board()
         move1 = Move.fromstr('H8 EGG')
-        self.assert_(move1.is_valid)
-        self.assert_(board.apply_move(move1))
+        self.assertTrue(move1.is_valid)
+        self.assertTrue(board.apply_move(move1))
 
         move2 = Move.fromstr('10I AFF.E')
-        self.assert_(move1.is_valid)
+        self.assertTrue(move1.is_valid)
         
         self.assertFalse(board.apply_move(move2))
         self.assertEqual([board._get_tile(pos) for pos in move1.coordinates], move1._tiles)
@@ -71,12 +71,12 @@ class TestApplyMove(unittest.TestCase):
         move3 = Move.fromstr('L9 OOR')
 
         for move in [move1, move2, move3]:
-            self.assert_(move.is_valid)
-            self.assert_(board.apply_move(move))
+            self.assertTrue(move.is_valid)
+            self.assertTrue(board.apply_move(move))
 
         # Edge case: All tiles in move are touching another tile on the board (or in the move), but the move is invalid as it forms 2 separate words in the same direction of play
         move4 = Move.fromstr('10G F.D.T')
-        self.assert_(move4.is_valid)
+        self.assertTrue(move4.is_valid)
         self.assertFalse(board.apply_move(move4))
 
         for move in [move1, move2, move3]:
@@ -90,7 +90,7 @@ class TestGetScore(unittest.TestCase):
         board = Board()
         # Also tests stacking multipliers (2xWord with 2xLetter)
         move1 = Move.fromstr('8H ABANDON')
-        self.assert_(board.apply_move(move1))
+        self.assertTrue(board.apply_move(move1))
         self.assertEqual(board.get_score(), 74)
 
     def test_repeated_premium(self):
@@ -102,20 +102,20 @@ class TestGetScore(unittest.TestCase):
 
         expected_scores = [4, 5, 5, 62]
         for move, score in zip([move1, move2, move3, move4], expected_scores):
-            self.assert_(board.apply_move(move))
+            self.assertTrue(board.apply_move(move))
             self.assertEqual(board.get_score(), score)
 
     def test_blank(self):
         board = Board()
         move1 = Move.fromstr('8D QiNDARS')
-        self.assert_(board.apply_move(move1))
+        self.assertTrue(board.apply_move(move1))
         self.assertEqual(board.get_score(), 102)
 
 class TestGetWordsFormed(unittest.TestCase):
     def test_get_word_single(self):
         board = Board()
         move1 = Move.fromstr('8B ETAERIO')
-        self.assert_(board.apply_move(move1))
+        self.assertTrue(board.apply_move(move1))
         self.assertSetEqual(board.get_words_formed(), set(['ETAERIO']))
 
     def test_get_word_multiple(self):
@@ -127,7 +127,7 @@ class TestGetWordsFormed(unittest.TestCase):
 
         expected_words = [set(['HORN']), set(['FARM']), set(['PASTE', 'FARMS']), set(['MOB', 'NOT', 'BE'])]
         for move, expected in zip([move1, move2, move3, move4], expected_words):
-            self.assert_(board.apply_move(move))
+            self.assertTrue(board.apply_move(move))
             self.assertSetEqual(board.get_words_formed(), expected)
 
     def test_repeated_words_counted_once(self):
@@ -140,7 +140,7 @@ class TestGetWordsFormed(unittest.TestCase):
 
         expected_words = [set(['TO']), set(['TILT']), set(['ILL', 'LO']), set(['QI'])]
         for move, expected in zip([move1, move2, move3, move4], expected_words):
-            self.assert_(board.apply_move(move))
+            self.assertTrue(board.apply_move(move))
             self.assertSetEqual(board.get_words_formed(), expected)
 
     def test_word_with_blank(self):
@@ -150,7 +150,7 @@ class TestGetWordsFormed(unittest.TestCase):
 
         expected_words = [set(['AQUIVER']), set(['INSIST'])]
         for move, expected in zip([move1, move2], expected_words):
-            self.assert_(board.apply_move(move))
+            self.assertTrue(board.apply_move(move))
             self.assertSetEqual(board.get_words_formed(), expected)
 
 if __name__ == '__main__':
