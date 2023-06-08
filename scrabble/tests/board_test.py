@@ -146,12 +146,16 @@ class TestGetWordsFormed(unittest.TestCase):
     def test_word_with_blank(self):
         board = Board()
         move1 = Move.fromstr('8C AQUiVER')
-        move2 = Move.fromstr('F8 .NSIsT')
+        move2 = Move.fromstr('F8 .NSI?T')
 
-        expected_words = [set(['AQUIVER']), set(['INSIST'])]
-        for move, expected in zip([move1, move2], expected_words):
-            self.assertTrue(board.apply_move(move))
-            self.assertSetEqual(board.get_challenge_words(), expected)
+        self.assertTrue(board.apply_move(move1))
+        self.assertSetEqual(board.get_challenge_words(), set(['AQUIVER']))
+
+        self.assertTrue(board.apply_move(move2))
+        self.assertEqual(board.get_challenge_words(), None)
+        self.assertTrue(board.set_blanks('s'))
+        self.assertSetEqual(board.get_challenge_words(), set(['INSIST']))
+            
 
 if __name__ == '__main__':
     unittest.main()

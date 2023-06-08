@@ -24,6 +24,8 @@ class Tile:
             return cls(tile_str)
         elif tile_str.islower():
             return cls('?').set_letter(tile_str)
+        elif tile_str == '?':
+            return cls('?')
         else:
             raise ValueError(f"Cannot construct tile from invalid letter {tile_str}")
 

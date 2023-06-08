@@ -76,7 +76,7 @@ class Move:
         
         for i, blank in enumerate(self.blanks()):
             try:
-                blank.set_letter(str[i])
+                blank.set_letter(blanks[i])
             except ValueError:
                 return False
             

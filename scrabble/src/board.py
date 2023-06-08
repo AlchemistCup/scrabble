@@ -70,6 +70,9 @@ class Board:
         Returns the set of words formed by the latest move, or None if an error is encountered.
         """
         move = self._move_info[-1].move
+        if move.n_of_unset_blanks > 0:
+            return None
+        
         return self._get_words_formed(move)
     
     def undo_move(self, n: int = -1) -> int:
