@@ -34,6 +34,10 @@ class Tile:
     @property
     def is_blank(self) -> bool:
         return self._letter == '?'
+    
+    @property
+    def is_set(self) -> bool:
+        return not self.is_blank or self._custom_letter is not None
 
     def set_letter(self, custom_letter: str):
         if not self.is_blank:
