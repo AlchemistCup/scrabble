@@ -74,6 +74,4 @@ class Tile:
         if not isinstance(other, Tile):
             return False
 
-        if self.is_blank:
-            return self._custom_letter == other._custom_letter
         return self._letter == other._letter

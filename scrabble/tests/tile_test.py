@@ -23,7 +23,7 @@ class TestEq(unittest.TestCase):
 
     def test_eq_blank(self):
         tile = Tile('?').set_letter('f')
-        self.assertNotEqual(tile, Tile('?'))
+        self.assertEqual(tile, Tile('?'))
         self.assertEqual(tile, Tile('?').set_letter('F'))
 
     def test_neq(self):
