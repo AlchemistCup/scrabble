@@ -1,9 +1,9 @@
 from typing import Optional, List, Set
 from enum import Enum
 
-from src.tile import Tile
-from src.move import Move, Direction
-from src.board_pos import Pos
+from .board_pos import Pos
+from .tile import Tile
+from .move import Move, Direction
 
 class SquareType(Enum):
     Plain = 0

@@ -1,7 +1,7 @@
 from typing import List
 
-from src.tile import Tile
-from src.board_pos import Pos, Direction
+from .tile import Tile
+from .board_pos import Pos, Direction
 
 class Move:
     def __init__(self, tiles: List[Tile], coordinates: List[Pos]):
