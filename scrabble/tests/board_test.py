@@ -44,7 +44,7 @@ class TestApplyMove(unittest.TestCase):
 
         self.assertTrue(board.apply_move(move1))
         self.assertFalse(board.apply_move(move2))
-        self.assertEqual([board._get_tile(pos) for pos in move1.coordinates], move1._tiles)
+        self.assertEqual([board.get_tile(pos) for pos in move1.coordinates], move1._tiles)
         for i, row in enumerate(board):
             for j, tile in enumerate(row):
                 if Pos(i, j) not in move1.coordinates:
