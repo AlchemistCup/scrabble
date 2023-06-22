@@ -93,16 +93,16 @@ class Board:
         
         return res
     
-    def _get_tile(self, pos: Pos) -> Optional[Tile]:
+    def get_tile(self, pos: Pos) -> Optional[Tile]:
         return self._board[pos.row][pos.col]
 
     def _place_tile(self, tile: Tile, pos: Pos):
-        if self._get_tile(pos) is not None:
+        if self.get_tile(pos) is not None:
             raise ValueError(f"Tried to place tile on non-empty board position {pos}")
         self._board[pos.row][pos.col] = tile
 
     def _remove_tile(self, pos: Pos):
-        if self._get_tile(pos) is None:
+        if self.get_tile(pos) is None:
             raise ValueError(f"Tried to remove tile from empty board position {pos}")
         self._board[pos.row][pos.col] = None
 
@@ -114,7 +114,7 @@ class Board:
             if pos == Pos(7, 7): # Center tile
                 return True
             
-            if any(self._get_tile(adj) is not None for adj in pos.get_adjacent()):
+            if any(self.get_tile(adj) is not None for adj in pos.get_adjacent()):
                 return True
             
         return False
@@ -128,7 +128,7 @@ class Board:
             if not curr.in_bounds:
                 return False
 
-            if curr not in move.coordinates and self._get_tile(curr) is None:
+            if curr not in move.coordinates and self.get_tile(curr) is None:
                 return False
             
             curr += move.direction.epsilon
@@ -139,7 +139,7 @@ class Board:
         """
         Gets the score for the given move. Assumes the board state contains the tiles from the move.
         """
-        assert all(tile == self._get_tile(pos) for tile, pos in move)
+        assert all(tile == self.get_tile(pos) for tile, pos in move)
 
         def get_score_1D(placed_tiles: List[Pos], dir: Direction):
             score = 0
@@ -175,7 +175,7 @@ class Board:
         """
         Gets all the words formed by a particular move. Assumes the board state contains the tiles from the move.
         """
-        assert all(tile == self._get_tile(pos) for tile, pos in move)
+        assert all(tile == self.get_tile(pos) for tile, pos in move)
 
         def get_word_1D(anchor: Pos, dir: Direction):
             word = ''
@@ -195,26 +195,26 @@ class Board:
         """
         Returns True if a word is formed from the given position along the direction specified, meaning that there is a neighbouring tile along the direction specified
         """
-        return any(self._get_tile(adj) is not None for adj in pos.get_adjacent(dir))
+        return any(self.get_tile(adj) is not None for adj in pos.get_adjacent(dir))
 
     def _get_tiles_through_pos(self, anchor: Pos, dir: Direction):
         """
         Generates all tiles along the given direction going through the anchor position until an empty square or the board edge is reached in order (i.e. top to bottom or left to right).
         """
-        assert self._get_tile(anchor) is not None
+        assert self.get_tile(anchor) is not None
 
         def _get_prev_tiles_rec(pos: Pos):
             prev_pos = pos - dir.epsilon
-            if not prev_pos.in_bounds or self._get_tile(prev_pos) is None:
-                yield self._get_tile(pos), pos
+            if not prev_pos.in_bounds or self.get_tile(prev_pos) is None:
+                yield self.get_tile(pos), pos
             else:
                 yield from _get_prev_tiles_rec(prev_pos)
-                yield self._get_tile(pos), pos
+                yield self.get_tile(pos), pos
 
         yield from _get_prev_tiles_rec(anchor)
         pos = anchor + dir.epsilon
-        while pos.in_bounds and self._get_tile(pos) is not None:
-            yield self._get_tile(pos), pos
+        while pos.in_bounds and self.get_tile(pos) is not None:
+            yield self.get_tile(pos), pos
             pos += dir.epsilon
 
     @staticmethod

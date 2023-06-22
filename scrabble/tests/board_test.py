@@ -30,7 +30,7 @@ class TestApplyMove(unittest.TestCase):
         self.assertTrue(move.is_valid)
 
         self.assertTrue(board.apply_move(move))
-        self.assertEqual([board._get_tile(pos) for pos in move.coordinates], move._tiles)
+        self.assertEqual([board.get_tile(pos) for pos in move.coordinates], move._tiles)
         for i, row in enumerate(board):
             for j, tile in enumerate(row):
                 if Pos(i, j) not in move.coordinates:
@@ -47,7 +47,7 @@ class TestApplyMove(unittest.TestCase):
             self.assertTrue(board.apply_move(move))
         
         for move in [move1, move2]:
-            self.assertEqual([board._get_tile(pos) for pos in move.coordinates], move._tiles)
+            self.assertEqual([board.get_tile(pos) for pos in move.coordinates], move._tiles)
         self.assertEqual(list(board.moves()), [move1, move2])
 
     def test_discontinuous_move_with_anchor(self):
@@ -60,8 +60,8 @@ class TestApplyMove(unittest.TestCase):
         self.assertTrue(move1.is_valid)
         
         self.assertFalse(board.apply_move(move2))
-        self.assertEqual([board._get_tile(pos) for pos in move1.coordinates], move1._tiles)
-        self.assertEqual([board._get_tile(pos) for pos in move2.coordinates], [None] * len(move2._tiles))
+        self.assertEqual([board.get_tile(pos) for pos in move1.coordinates], move1._tiles)
+        self.assertEqual([board.get_tile(pos) for pos in move2.coordinates], [None] * len(move2._tiles))
         self.assertEqual(list(board.moves()), [move1])
 
     def test_discontinuous_move_with_all_tiles_adjacent(self):
@@ -80,9 +80,9 @@ class TestApplyMove(unittest.TestCase):
         self.assertFalse(board.apply_move(move4))
 
         for move in [move1, move2, move3]:
-            self.assertEqual([board._get_tile(pos) for pos in move.coordinates], move._tiles)
+            self.assertEqual([board.get_tile(pos) for pos in move.coordinates], move._tiles)
         
-        self.assertEqual([board._get_tile(pos) for pos in move4.coordinates], [None] * len(move4._tiles))
+        self.assertEqual([board.get_tile(pos) for pos in move4.coordinates], [None] * len(move4._tiles))
         self.assertEqual(list(board.moves()), [move1, move2, move3])
 
 class TestGetScore(unittest.TestCase):
