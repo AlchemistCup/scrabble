@@ -116,7 +116,7 @@ class TestGetWordsFormed(unittest.TestCase):
         board = Board()
         move1 = Move.fromstr('8B ETAERIO')
         self.assertTrue(board.apply_move(move1))
-        self.assertSetEqual(board.get_words_formed(), set(['ETAERIO']))
+        self.assertSetEqual(board.get_challenge_words(), set(['ETAERIO']))
 
     def test_get_word_multiple(self):
         board = Board()
@@ -128,7 +128,7 @@ class TestGetWordsFormed(unittest.TestCase):
         expected_words = [set(['HORN']), set(['FARM']), set(['PASTE', 'FARMS']), set(['MOB', 'NOT', 'BE'])]
         for move, expected in zip([move1, move2, move3, move4], expected_words):
             self.assertTrue(board.apply_move(move))
-            self.assertSetEqual(board.get_words_formed(), expected)
+            self.assertSetEqual(board.get_challenge_words(), expected)
 
     def test_repeated_words_counted_once(self):
         # In the case of challenges, a word is identified by its unique spelling
@@ -141,17 +141,21 @@ class TestGetWordsFormed(unittest.TestCase):
         expected_words = [set(['TO']), set(['TILT']), set(['ILL', 'LO']), set(['QI'])]
         for move, expected in zip([move1, move2, move3, move4], expected_words):
             self.assertTrue(board.apply_move(move))
-            self.assertSetEqual(board.get_words_formed(), expected)
+            self.assertSetEqual(board.get_challenge_words(), expected)
 
     def test_word_with_blank(self):
         board = Board()
         move1 = Move.fromstr('8C AQUiVER')
-        move2 = Move.fromstr('F8 .NSIsT')
+        move2 = Move.fromstr('F8 .NSI?T')
 
-        expected_words = [set(['AQUIVER']), set(['INSIST'])]
-        for move, expected in zip([move1, move2], expected_words):
-            self.assertTrue(board.apply_move(move))
-            self.assertSetEqual(board.get_words_formed(), expected)
+        self.assertTrue(board.apply_move(move1))
+        self.assertSetEqual(board.get_challenge_words(), set(['AQUIVER']))
+
+        self.assertTrue(board.apply_move(move2))
+        self.assertEqual(board.get_challenge_words(), None)
+        self.assertTrue(board.set_blanks('s'))
+        self.assertSetEqual(board.get_challenge_words(), set(['INSIST']))
+            
 
 if __name__ == '__main__':
     unittest.main()

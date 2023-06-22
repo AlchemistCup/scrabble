@@ -66,6 +66,28 @@ class Move:
         elif diff.col == 0:
             return Direction.Vertical
         
+    @property
+    def n_of_unset_blanks(self):
+        return sum(tile.is_blank and not tile.is_set for tile in self._tiles)
+        
+    def set_blanks(self, blanks: str) -> bool:
+        if self.n_of_unset_blanks != len(blanks):
+            return False
+        
+        for i, blank in enumerate(self.blanks()):
+            try:
+                blank.set_letter(blanks[i])
+            except ValueError:
+                return False
+            
+        return True
+
+    def blanks(self):
+        for tile in self._tiles:
+            if tile.is_blank:
+                yield tile
+        
+
     def format(self):
         """
         Converts a move to Woogles string format: "<start_pos> <tiles>", where '.' is used to represent playing through an existing tile.
@@ -78,6 +100,7 @@ class Move:
             move += tile.format()
 
         return f"{self.start.format(self.direction)} {move}"
+    
     
     def __eq__(self, other) -> bool:
         return self._tiles == other._tiles and self.coordinates == other.coordinates 

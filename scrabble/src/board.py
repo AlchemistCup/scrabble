@@ -13,10 +13,9 @@ class SquareType(Enum):
     WordX3 = 4
 
 class MoveInfo:
-    def __init__(self, move: Move, score: int, words_formed: Set[str]):
+    def __init__(self, move: Move, score: int):
         self._move = move
         self._score = score
-        self._words = words_formed
 
     @property
     def move(self):
@@ -25,10 +24,6 @@ class MoveInfo:
     @property
     def score(self):
         return self._score
-    
-    @property
-    def words(self):
-        return self._words
 
 class Board:
     DIM = Pos.MAX_SIZE
@@ -54,21 +49,31 @@ class Board:
             self._place_tile(tile, pos)
         
         score = self._get_score(move)
-        words = self._get_words_formed(move)
-        self._move_info.append(MoveInfo(move, score, words))
+        self._move_info.append(MoveInfo(move, score))
         return True
     
+    def set_blanks(self, blanks: str) -> bool:
+        """
+        Sets the blank tiles for the last move specified by blanks in word order. Returns true if operation completed successfully, false otherwise.
+        """
+        move = self._move_info[-1].move
+        return move.set_blanks(blanks)
+        
     def get_score(self, n: int = -1):
         """
         Returns the score of the n-th move (latest by default)
         """
         return self._move_info[n].score
     
-    def get_words_formed(self, n: int = -1):
+    def get_challenge_words(self) -> Optional[Set[str]]:
         """
-        Returns the set of words formed by the n-th move (latest by default)
+        Returns the set of words formed by the latest move, or None if an error is encountered.
         """
-        return self._move_info[n].words
+        move = self._move_info[-1].move
+        if move.n_of_unset_blanks > 0:
+            return None
+        
+        return self._get_words_formed(move)
     
     def undo_move(self, n: int = -1) -> int:
         """
