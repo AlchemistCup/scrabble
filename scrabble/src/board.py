@@ -208,15 +208,15 @@ class Board:
         """
         assert self._get_tile(anchor) is not None
 
-        def _get_prev_tiles_rec(pos: Pos):
+        def get_prev_tiles_rec(pos: Pos):
             prev_pos = pos - dir.epsilon
             if not prev_pos.in_bounds or self._get_tile(prev_pos) is None:
                 yield self._get_tile(pos), pos
             else:
-                yield from _get_prev_tiles_rec(prev_pos)
+                yield from get_prev_tiles_rec(prev_pos)
                 yield self._get_tile(pos), pos
 
-        yield from _get_prev_tiles_rec(anchor)
+        yield from get_prev_tiles_rec(anchor)
         pos = anchor + dir.epsilon
         while pos.in_bounds and self._get_tile(pos) is not None:
             yield self._get_tile(pos), pos

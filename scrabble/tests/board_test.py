@@ -15,7 +15,7 @@ class TestApplyMove(unittest.TestCase):
         self.assertEqual(board._board, Board()._board)
         self.assertEqual(list(board.moves()), [])
 
-    def test_move_no_anchor(self):
+    def test_first_move_no_anchor(self):
         board = Board()
         move = Move.fromstr('I8 EGG')
         self.assertTrue(move.is_valid)
@@ -37,6 +37,20 @@ class TestApplyMove(unittest.TestCase):
                     self.assertEqual(tile, None)
         self.assertEqual(list(board.moves()), [move])
 
+    def test_move_no_anchor(self):
+        board = Board()
+        move1 = Move.fromstr('H8 EGG')
+        move2 = Move.fromstr('10I .AFFE')
+
+        self.assertTrue(board.apply_move(move1))
+        self.assertFalse(board.apply_move(move2))
+        self.assertEqual([board._get_tile(pos) for pos in move1.coordinates], move1._tiles)
+        for i, row in enumerate(board):
+            for j, tile in enumerate(row):
+                if Pos(i, j) not in move1.coordinates:
+                    self.assertEqual(tile, None)
+        self.assertEqual(list(board.moves()), [move1])
+
     def test_move_with_anchor(self):
         board = Board()
         move1 = Move.fromstr('H8 EGG')
@@ -57,7 +71,7 @@ class TestApplyMove(unittest.TestCase):
         self.assertTrue(board.apply_move(move1))
 
         move2 = Move.fromstr('10I AFF.E')
-        self.assertTrue(move1.is_valid)
+        self.assertTrue(move2.is_valid)
         
         self.assertFalse(board.apply_move(move2))
         self.assertEqual([board._get_tile(pos) for pos in move1.coordinates], move1._tiles)
@@ -111,7 +125,7 @@ class TestGetScore(unittest.TestCase):
         self.assertTrue(board.apply_move(move1))
         self.assertEqual(board.get_score(), 102)
 
-class TestGetWordsFormed(unittest.TestCase):
+class TestGetChallengeWords(unittest.TestCase):
     def test_get_word_single(self):
         board = Board()
         move1 = Move.fromstr('8B ETAERIO')
