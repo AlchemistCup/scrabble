@@ -75,3 +75,9 @@ class Tile:
             return False
 
         return self._letter == other._letter
+    
+    def __lt__(self, other) -> bool:
+        return self._letter < other._letter
+    
+    def __hash__(self) -> int:
+        return hash(self._letter)
