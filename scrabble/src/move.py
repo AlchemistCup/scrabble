@@ -94,7 +94,7 @@ class Move:
         """
         assert self.is_valid, "Cannot display invalid move"
         move = f"{self._tiles[0].format()}"
-        for i, (tile, pos) in enumerate(self)[1:]:
+        for i, (tile, pos) in list(enumerate(self))[1:]:
             distance_from_previous = (pos - self.coordinates[i - 1]).L1_norm() # Displacement should be 0 in one direction
             move += '.' * (distance_from_previous - 1) # Represents tiles being played through
             move += tile.format()
