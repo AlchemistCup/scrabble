@@ -77,18 +77,17 @@ class Board:
     
     def undo_move(self) -> int:
         """
-        Undoes the latest move and returns its score
+        Undoes the latest move and returns its related info
         """
         if len(self._move_info) == 0:
             raise RuntimeError("Called undo move when no moves have been applied")
         
-        move = self._move_info[-1].move
-        for pos in move.coordinates:
+        move_info = self._move_info[-1]
+        for pos in move_info.move.coordinates:
             self._board[pos.row][pos.col] = None
 
-        score = self._move_info[-1].score
         del self._move_info[-1]
-        return score
+        return move_info
     
     def __iter__(self):
         return iter(self._board)
