@@ -75,7 +75,7 @@ class Board:
         
         return self._get_words_formed(move)
     
-    def undo_move(self) -> int:
+    def undo_move(self) -> MoveInfo:
         """
         Undoes the latest move and returns its related info
         """
