@@ -75,12 +75,19 @@ class Board:
         
         return self._get_words_formed(move)
     
-    def undo_move(self, n: int = -1) -> int:
+    def undo_move(self) -> int:
         """
-        Undoes the n-th move (by default latest), and returns the score of the move
+        Undoes the latest move and returns its score
         """
-        score = self._move_info[n].score
-        del self._move_info[n]
+        if len(self._move_info) == 0:
+            raise RuntimeError("Called undo move when no moves have been applied")
+        
+        move = self._move_info[-1].move
+        for pos in move.coordinates:
+            self._board[pos.row][pos.col] = None
+
+        score = self._move_info[-1].score
+        del self._move_info[-1]
         return score
     
     def __iter__(self):
