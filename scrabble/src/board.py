@@ -94,13 +94,15 @@ class Board:
         return iter(self._board)
     
     def __repr__(self) -> str:
-        row_sep = "+-" * Board.DIM + "+\n"
-        res = row_sep
-        for row in self:
+        res = "    " + "   ".join(chr(ord('A') + i) for i in range(15)) + "\n"
+        row_sep = "  " + "+---" * Board.DIM + "+\n"
+        res += row_sep
+        for i, row in enumerate(self):
+            res += f"{i+1}".ljust(2, ' ')
             for tile in row:
                 if tile is None:
                     tile = ' '
-                res += f"|{tile.format()}"
+                res += f"| {tile.format()} "
             res += f"|\n{row_sep}" 
         
         return res
