@@ -34,6 +34,10 @@ class Tile:
         return self.LETTER_VALUES[self._letter]
     
     @property
+    def letter(self) -> str:
+        return self._letter
+    
+    @property
     def is_blank(self) -> bool:
         return self._letter == '?'
     
