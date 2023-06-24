@@ -63,8 +63,7 @@ class Tile:
         """
         Converts a tile to Woogles string format: "<letter>" (uppercase). If a tile is blank, "<custom_letter>" is displayed instead (lowercase).
         """
-        if self.is_blank:
-            assert self._custom_letter is not None
+        if self.is_blank and self._custom_letter is not None:
             return self._custom_letter
         return self._letter
 
